@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
     required: true
  },
   address: { type: String },
-  is_verified: { type: Boolean, default: false },
+  is_verified: { type: Boolean, default: true },
   created_at: { type: Date, default: Date.now }
 });
 

@@ -1,7 +1,9 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-const register = async (req, res) => {
+
+// REGISTER
+const register = async (req, res, next) => {
   try {
     const { 
       username, 
@@ -33,7 +35,7 @@ const register = async (req, res) => {
       business_license,
       phone,
       address,
-      is_verified: false,
+      is_verified: false,   // admin must verify later
       created_at: new Date()
     });
 
@@ -46,7 +48,8 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req,next,res) => {
+//login
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -60,11 +63,16 @@ const login = async (req,next,res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    // Optional: block unverified users
+    if (!user.is_verified) {
+      return res.status(403).json({ message: "Account not verified yet" });
+    }
+
     // Generate JWT token
     const token = jwt.sign(
-      { id: user._id },
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" } // optional expiry
+      { expiresIn: "1h" }
     );
 
     // Response
@@ -72,35 +80,32 @@ const login = async (req,next,res) => {
       token,
       user: {
         id: user._id,
-        username: user.username,  // fixed key name
+        username: user.username,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Error logging in", error: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
-const authenticationToken =async(request,response)=>{
-    let jwtToken;
-    const authHeader=request.headers["authorization"];
-    if(authHeader!=undefined){
-      jwtToken=authHeader.split(" ")[1];
+// AUTH MIDDLEWARE
+const authenticationToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (error, payload) => {
+    if (error) {
+      return res.status(401).json({ message: "Invalid token" });
     }
-    if(jwtToken==undefined){
-      response.status(200).send("Invalid jwtToken");
-    }
-    else{
-      jwt.verify(jwtToken,process.env.JWT_SECRET,async(error,payload)=>{
-        if(error){
-          response.status(401).send("Invalid jwtToken");
-        }
-        else{
-          // request.user_name=payload.username;
-          next();
-        }
-      })
-    }
+    req.user = payload; // will contain {id, role}
+    next();
+  });
 };
 
 export {register,login,authenticationToken};

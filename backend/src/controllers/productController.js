@@ -1,18 +1,21 @@
 import Product from "../models/Product.js";
 
-const createProduct=async(req,res)=>{
-    try{
-        if (req.user.role !== "shop_owner") {
-        return res.status(403).send({ message: "Only shop owners are allowed" });
-        }
-        const product = new Product({ ...req.body, user_id: req.user.id });
-        await product.save();
-        res.status(200).json(product);
+const createProduct = async (req, res) => {
+  try {
+    console.log("Decoded user from token:", req.user);
+
+    if (req.user.role !== "shop_owner") {
+      return res.status(403).json({ message: "Only shop owners are allowed" });
     }
-    catch(error){
-        res.status(500).send({message:error.message});
-    }
+
+    const product = new Product({ ...req.body, user_id: req.user.id });
+    await product.save();
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
+
 
 const getProducts=async(req,res)=>{
   try {
@@ -44,20 +47,27 @@ const getSingleProduct=async(req,res)=>{
   }
 };
 
-const updateProduct=async(req,res)=>{
+const updateProduct = async (req, res) => {
   try {
     if (req.user.role !== "shop_owner") {
       return res.status(403).json({ message: "Only shop owners can update products" });
     }
 
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "No fields to update" });
+    }
+
     const product = await Product.findOneAndUpdate(
       { _id: req.params.id, user_id: req.user.id }, 
       req.body,
-      { new: true }
+      { new: true, runValidators: true } 
     );
 
-    if (!product) return res.status(404).json({ message: "Product not found" });
-    res.json(product);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json(product);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
