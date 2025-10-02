@@ -1,7 +1,8 @@
 import Supplier from "../models/Supplier.js";
 
-const createSupplier=async(req,res)=>{
-   try {
+// Create Supplier
+const createSupplier = async (req, res) => {
+  try {
     console.log("Decoded user from token:", req.user);
 
     if (req.user.role !== "shop_owner") {
@@ -10,40 +11,42 @@ const createSupplier=async(req,res)=>{
 
     const supplier = new Supplier({ ...req.body, user_id: req.user.id });
     await supplier.save();
+
     res.status(201).json(supplier);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const getSuppliers=async(req,res)=>{
-    try{
-        let filter = { user_id: req.user.id };
-        const suppliers=await Supplier.find(filter);
-        res.json(suppliers);
-    }
-    catch(error){
-        res.status(500).json({"message":error.message});
-    }
+//  Get All Suppliers
+const getSuppliers = async (req, res) => {
+  try {
+    let filter = { user_id: req.user.id };
+    const suppliers = await Supplier.find(filter);
+
+    res.status(200).json(suppliers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-
-const getSingleSupplier=async(req,res)=>{
+//  Get Single Supplier
+const getSingleSupplier = async (req, res) => {
   try {
     const supplier = await Supplier.findOne({
       _id: req.params.id,
       user_id: req.user.id,
     });
 
-    if (!supplier) return res.status(404).json({ message: "supplier not found" });
-    res.json(supplier);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+    if (!supplier) return res.status(404).json({ message: "Supplier not found" });
 
+    res.status(200).json(supplier);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-
+//  Update Supplier
 const updateSupplier = async (req, res) => {
   try {
     if (req.user.role !== "shop_owner") {
@@ -55,23 +58,21 @@ const updateSupplier = async (req, res) => {
     }
 
     const supplier = await Supplier.findOneAndUpdate(
-      { _id: req.params.id, user_id: req.user.id }, 
+      { _id: req.params.id, user_id: req.user.id },
       req.body,
-      { new: true, runValidators: true } 
+      { new: true, runValidators: true }
     );
 
-    if (!supplier) {
-      return res.status(404).json({ message: "supplier not found" });
-    }
+    if (!supplier) return res.status(404).json({ message: "Supplier not found" });
 
     res.status(200).json(supplier);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-
-const deleteSupplier=async (req, res) => {
+//  Delete Supplier
+const deleteSupplier = async (req, res) => {
   try {
     if (req.user.role !== "shop_owner") {
       return res.status(403).json({ message: "Only shop owners can delete supplier" });
@@ -79,15 +80,15 @@ const deleteSupplier=async (req, res) => {
 
     const supplier = await Supplier.findOneAndDelete({
       _id: req.params.id,
-      user_id: req.user.id, 
+      user_id: req.user.id,
     });
 
-    if (!supplier) return res.status(404).json({ message: "supplier not found" });
-    res.json({ message: "supplier deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    if (!supplier) return res.status(404).json({ message: "Supplier not found" });
+
+    res.json({ message: "Supplier deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-
-export {createSupplier,getSuppliers,getSingleSupplier,updateSupplier,deleteSupplier};
+export { createSupplier, getSuppliers, getSingleSupplier, updateSupplier, deleteSupplier };

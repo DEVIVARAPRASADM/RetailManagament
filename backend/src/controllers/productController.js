@@ -1,5 +1,6 @@
 import Product from "../models/Product.js";
 
+// Create Product
 const createProduct = async (req, res) => {
   try {
     console.log("Decoded user from token:", req.user);
@@ -10,14 +11,15 @@ const createProduct = async (req, res) => {
 
     const product = new Product({ ...req.body, user_id: req.user.id });
     await product.save();
+
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-
-const getProducts=async(req,res)=>{
+//  Get All Products
+const getProducts = async (req, res) => {
   try {
     const { category } = req.query;
     let filter = { user_id: req.user.id };
@@ -27,13 +29,14 @@ const getProducts=async(req,res)=>{
     }
 
     const products = await Product.find(filter);
-    res.json(products);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-const getSingleProduct=async(req,res)=>{
+//  Get Single Product
+const getSingleProduct = async (req, res) => {
   try {
     const product = await Product.findOne({
       _id: req.params.id,
@@ -41,12 +44,14 @@ const getSingleProduct=async(req,res)=>{
     });
 
     if (!product) return res.status(404).json({ message: "Product not found" });
-    res.json(product);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
+//  Update Product
 const updateProduct = async (req, res) => {
   try {
     if (req.user.role !== "shop_owner") {
@@ -58,22 +63,21 @@ const updateProduct = async (req, res) => {
     }
 
     const product = await Product.findOneAndUpdate(
-      { _id: req.params.id, user_id: req.user.id }, 
+      { _id: req.params.id, user_id: req.user.id },
       req.body,
-      { new: true, runValidators: true } 
+      { new: true, runValidators: true }
     );
 
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
+    if (!product) return res.status(404).json({ message: "Product not found" });
 
     res.status(200).json(product);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-const deleteProduct=async (req, res) => {
+//  Delete Product
+const deleteProduct = async (req, res) => {
   try {
     if (req.user.role !== "shop_owner") {
       return res.status(403).json({ message: "Only shop owners can delete products" });
@@ -81,15 +85,15 @@ const deleteProduct=async (req, res) => {
 
     const product = await Product.findOneAndDelete({
       _id: req.params.id,
-      user_id: req.user.id, 
+      user_id: req.user.id,
     });
 
     if (!product) return res.status(404).json({ message: "Product not found" });
+
     res.json({ message: "Product deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-
-export {createProduct,getProducts,getSingleProduct,updateProduct,deleteProduct};
+export { createProduct, getProducts, getSingleProduct, updateProduct, deleteProduct };

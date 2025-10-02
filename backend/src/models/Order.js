@@ -6,7 +6,7 @@ const orderSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-
+  
   supplier_id: {                      
     type: mongoose.Schema.Types.ObjectId,
     ref: "Supplier",

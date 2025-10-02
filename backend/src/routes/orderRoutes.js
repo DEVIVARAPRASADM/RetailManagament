@@ -1,12 +1,16 @@
-// import express from "express";
-// import { createNotes, deleteNotes, getAllNotes, updateNotes } 
-//     from "../controllers/notesController.js";
+import express from "express";
+import {createOrder,getOrders,getSpecificOrder,updateOrder,deleteOrder} from "../controllers/orderController.js";
+import {authenticationToken} from "../controllers/authController.js";
 
-// const router = express.Router();
 
-// router.get("/", getAllNotes);      
-// router.post("/", createNotes);
-// router.put("/:id", updateNotes);
-// router.delete("/:id", deleteNotes);
+const router=express.Router();
 
-// export default router;
+router.post("/",authenticationToken,createOrder);
+router.get("/",authenticationToken,getOrders);
+
+router.get("/:id",authenticationToken,getSpecificOrder);
+
+router.put("/:id",authenticationToken,updateOrder);
+router.delete("/:id",authenticationToken,deleteOrder);
+
+export default router;
