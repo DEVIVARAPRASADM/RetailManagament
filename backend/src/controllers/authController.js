@@ -44,6 +44,7 @@ const register = async (req, res, next) => {
 
     res.status(201).json({ message: "User registered successfully", user });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error registering user", error });
   }
 };
@@ -63,19 +64,20 @@ const login = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Optional: block unverified users
     if (!user.is_verified) {
       return res.status(403).json({ message: "Account not verified yet" });
     }
 
-    // Generate JWT token
+    // --- 1. UPDATE THE JWT PAYLOAD ---
+    // Add business_name and username so they can be accessed from the token if needed
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, business_name: user.business_name, username: user.username },
       process.env.JWT_SECRET,
       { expiresIn: "1000h" }
     );
 
-    // Response
+    // --- 2. UPDATE THE JSON RESPONSE ---
+    // This is the most important change. Add business_name to the user object.
     res.status(200).json({
       token,
       user: {
@@ -83,13 +85,13 @@ const login = async (req, res, next) => {
         username: user.username,
         email: user.email,
         role: user.role,
+        business_name: user.business_name, // <-- THIS LINE IS THE FIX
       },
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
-
 // AUTH MIDDLEWARE
 const authenticationToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];

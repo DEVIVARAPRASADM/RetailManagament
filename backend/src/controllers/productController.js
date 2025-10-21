@@ -1,18 +1,59 @@
 import Product from "../models/Product.js";
 
+import path from "path";
 // Create Product
 const createProduct = async (req, res) => {
   try {
-    console.log("Decoded user from token:", req.user);
-
     if (req.user.role !== "shop_owner") {
       return res.status(403).json({ message: "Only shop owners are allowed" });
     }
 
-    const product = new Product({ ...req.body, user_id: req.user.id });
+    let imageUrl = "";
+    if (req.file) {
+      imageUrl = `uploads/${req.file.filename}`; // relative path
+    }
+
+    const product = new Product({
+      ...req.body,
+      user_id: req.user.id,
+      image_url: imageUrl,
+    });
+
     await product.save();
 
     res.status(201).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//update poduct
+const updateProduct = async (req, res) => {
+  try {
+    // Role check
+    if (req.user.role !== "shop_owner") {
+      return res.status(403).json({ message: "Only shop owners can update products" });
+    }
+
+    // Directly use req.body to prevent accidental modifications
+    const updatedData = req.body; 
+
+    // Handle image update if a new file is provided
+    if (req.file) {
+      updatedData.image_url = `uploads/${req.file.filename}`;
+    }
+
+    const product = await Product.findOneAndUpdate(
+      { _id: req.params.id, user_id: req.user.id }, // The query to find the product
+      updatedData,                                   // The data to update with
+      { new: true, runValidators: true }             // Options: return the new doc, run schema validators
+    );
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found or you are not the owner" });
+    }
+
+    res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -51,30 +92,6 @@ const getSingleProduct = async (req, res) => {
   }
 };
 
-//  Update Product
-const updateProduct = async (req, res) => {
-  try {
-    if (req.user.role !== "shop_owner") {
-      return res.status(403).json({ message: "Only shop owners can update products" });
-    }
-
-    if (Object.keys(req.body).length === 0) {
-      return res.status(400).json({ message: "No fields to update" });
-    }
-
-    const product = await Product.findOneAndUpdate(
-      { _id: req.params.id, user_id: req.user.id },
-      req.body,
-      { new: true, runValidators: true }
-    );
-
-    if (!product) return res.status(404).json({ message: "Product not found" });
-
-    res.status(200).json(product);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 //  Delete Product
 const deleteProduct = async (req, res) => {
