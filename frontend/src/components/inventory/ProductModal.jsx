@@ -22,7 +22,7 @@ const ProductModal = ({ open, onClose, onSave, productToEdit }) => {
         stock: productToEdit.stock,
       });
       if (productToEdit.image_url) {
-        setImagePreview(`http://localhost:5001/${productToEdit.image_url}`);
+            setImagePreview(`${import.meta.env.VITE_API_URL}/${productToEdit.image_url}`);
       }
     } else {
       setFormData({ name: '', category: categories[0], price: '', stock: '' });

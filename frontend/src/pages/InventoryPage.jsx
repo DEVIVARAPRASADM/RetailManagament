@@ -95,7 +95,7 @@ const InventoryPage = () => {
                     <TableCell>
                       <Avatar 
                         variant="rounded"
-                        src={`http://localhost:5001/${product.image_url}`} 
+                            src={`${import.meta.env.VITE_API_URL}/${product.image_url}`}
                         alt={product.name}
                       />
                     </TableCell>

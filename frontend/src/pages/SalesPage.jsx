@@ -10,7 +10,7 @@ import {
 import { fetchProducts } from '../services/productService';
 import { recordSale } from '../services/saleService';
 
-const BACKEND_URL = 'http://localhost:5001';
+const BACKEND_URL = import.meta.env.VITE_API_URL;
 
 const ProductCard = ({ product, onAdd }) => {
     const isOutOfStock = product.stock === 0;

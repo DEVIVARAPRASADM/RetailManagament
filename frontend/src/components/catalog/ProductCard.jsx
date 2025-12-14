@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
 
-const BACKEND_URL = "http://localhost:5001";
+const BACKEND_URL = import.meta.env.VITE_API_URL;
 
 const ProductCard = ({ product, onAdd, onUpdate, cartQty }) => {
   return (

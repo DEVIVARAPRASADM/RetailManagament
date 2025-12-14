@@ -24,7 +24,7 @@ import {
 
 import axios from "axios";
 
-const API_URL = "http://localhost:5001/api/sales/demand";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/sales/demand`;
 
 const DemandPredictionChart = () => {
   const [chartData, setChartData] = useState([]);
