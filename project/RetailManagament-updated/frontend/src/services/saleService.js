@@ -1,39 +1,24 @@
-import axios from 'axios';
-import { data } from 'react-router-dom';
-
-const API_URL = 'http://localhost:5001/api/sales';
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token
-    ? { headers: { Authorization: `Bearer ${token}` } }
-    : {}; // if no token, still allow public GETs
-};
+// src/services/salesService.js
+import API from "./api";
 
 export const recordSale = (cartItems) => {
-  const payload = {
+  return API.post("/api/sales", {
     items: cartItems.map((item) => ({
       productId: item._id,
       quantity: item.quantity,
     })),
-  };
-  return axios.post(API_URL, payload, getAuthHeaders());
+  });
 };
 
-export const getDailySales = async () => {
-  return axios.get(`${API_URL}/daily`, getAuthHeaders());
+export const getDailySales = () => {
+  return API.get("/api/sales/daily");
 };
 
-export const getProductDemand = async () => {
-  return axios.get(`${API_URL}/demand`, getAuthHeaders());
+export const getProductDemand = () => {
+  return API.get("/api/sales/demand");
 };
-
 
 export const getSalesPrediction = async () => {
-  const res = await axios.get(
-    "http://localhost:5001/api/sales/predict",
-    getAuthHeaders()
-  );
-  console.log("output:", res.data);
+  const res = await API.get("/api/sales/predict");
   return res.data;
 };

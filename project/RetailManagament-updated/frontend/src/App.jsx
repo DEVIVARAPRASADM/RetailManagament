@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 // Import Layouts
 import DashboardLayout from './layouts/DashboardLayout';
 
-// Import ALL your real pages
+// Import ALL  real pages
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -47,3 +47,4 @@ function App() {
 }
 
 export default App;
+

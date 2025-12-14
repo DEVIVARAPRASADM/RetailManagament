@@ -34,7 +34,10 @@ const DashboardPage = () => {
       }
     };
     loadStats();
+  console.log("useEffect rendered");
   }, []);
+
+  console.log("dashboard component rendered");
 
   return (
     <Box
