@@ -2,16 +2,16 @@
 import API from "./api";
 
 export const fetchAllSuppliers = async () => {
-  const res = await API.get("/api/suppliers/");
+  const res = await API.get("/suppliers/");
   return res.data?.data || res.data || [];
 };
 
 export const fetchOrders = async () => {
-  const res = await API.get("/api/suppliers/orders");
+  const res = await API.get("/suppliers/orders");
   return res.data;
 };
 
 export const updateOrderStatus = async (orderId) => {
-  const res = await API.put(`/api/suppliers/${orderId}/ship`);
+  const res = await API.put(`/suppliers/${orderId}/ship`);
   return res.data;
 };

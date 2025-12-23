@@ -2,5 +2,5 @@
 import API from "./api";
 
 export const fetchDashboardStats = () => {
-  return API.get("/api/dashboard/stats");
+  return API.get("/dashboard/stats");
 };

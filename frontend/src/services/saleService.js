@@ -2,7 +2,7 @@
 import API from "./api";
 
 export const recordSale = (cartItems) => {
-  return API.post("/api/sales", {
+  return API.post("/sales", {
     items: cartItems.map((item) => ({
       productId: item._id,
       quantity: item.quantity,
@@ -11,14 +11,14 @@ export const recordSale = (cartItems) => {
 };
 
 export const getDailySales = () => {
-  return API.get("/api/sales/daily");
+  return API.get("/sales/daily");
 };
 
 export const getProductDemand = () => {
-  return API.get("/api/sales/demand");
+  return API.get("/sales/demand");
 };
 
 export const getSalesPrediction = async () => {
-  const res = await API.get("/api/sales/predict");
+  const res = await API.get("/sales/predict");
   return res.data;
 };

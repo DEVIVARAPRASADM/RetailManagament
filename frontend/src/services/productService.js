@@ -3,22 +3,22 @@ import API from "./api";
 
 export const fetchProducts = (category = "") => {
   return API.get(
-    category ? `/api/products?category=${category}` : "/api/products"
+    category ? `/products?category=${category}` : "/products"
   );
 };
 
 export const addProduct = (productData) => {
-  return API.post("/api/products", productData);
+  return API.post("/products", productData);
 };
 
 export const editProduct = (id, productData) => {
-  return API.put(`/api/products/${id}`, productData);
+  return API.put(`/products/${id}`, productData);
 };
 
 export const removeProduct = (id) => {
-  return API.delete(`/api/products/${id}`);
+  return API.delete(`/products/${id}`);
 };
 
 export const fetchDiscoveryProducts = () => {
-  return API.get("/api/products/discover");
+  return API.get("/products/discover");
 };

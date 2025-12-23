@@ -1,55 +1,57 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
-import { 
-  Container, 
-  Card, 
-  CardContent, 
-  Typography, 
-  TextField, 
-  Button, 
-  Box, 
-  Alert 
-} from '@mui/material';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import API from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import {
+  Container,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Alert,
+} from "@mui/material";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth(); 
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/login`,
-        { email, password }
-      );
-      const { user, token } = response.data;
-      
-      login(user, token); 
+      const response = await API.post("/auth/login", {
+        email,
+        password,
+      });
 
-      // === UPDATED ROLE-BASED REDIRECTION ===
+      const { user, token } = response.data;
+      login(user, token);
+
+      // Role-based navigation
       if (user) {
         switch (user.role) {
-          case 'Admin':
-            navigate('/admin/dashboard');
+          case "Admin":
+            navigate("/admin/dashboard");
             break;
-          case 'Supplier':
-            navigate('/supplier/orders');
+          case "Supplier":
+            navigate("/supplier/orders");
             break;
-          default: // For 'Shop Owner' and any other roles
-            navigate('/dashboard');
+          default:
+            navigate("/dashboard");
             break;
         }
       }
-      
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please check your credentials.");
+      setError(
+        err.response?.data?.message ||
+          "Login failed. Please check your credentials."
+      );
     }
   };
 
@@ -58,7 +60,11 @@ const LoginPage = () => {
       <Container maxWidth="xs">
         <Card>
           <CardContent className="p-8">
-            <Typography variant="h4" component="h1" className="text-center font-bold mb-6">
+            <Typography
+              variant="h4"
+              component="h1"
+              className="text-center font-bold mb-6"
+            >
               Welcome Back
             </Typography>
 
@@ -76,9 +82,10 @@ const LoginPage = () => {
                 fullWidth
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)} 
+                onChange={(e) => setEmail(e.target.value)}
                 sx={{ mb: 2 }}
               />
+
               <TextField
                 label="Password"
                 variant="outlined"
@@ -89,6 +96,7 @@ const LoginPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 sx={{ mb: 3 }}
               />
+
               <Button
                 type="submit"
                 variant="contained"
@@ -100,9 +108,13 @@ const LoginPage = () => {
                 Sign In
               </Button>
             </form>
+
             <Typography className="text-center mt-4">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-blue-600 hover:underline font-semibold">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="text-blue-600 hover:underline font-semibold"
+              >
                 Sign Up
               </Link>
             </Typography>
