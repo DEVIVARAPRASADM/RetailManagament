@@ -199,7 +199,6 @@ npm run dev
 * Automated supplier notifications
 * Multi-store support
 * AI-based pricing optimization
-* Export reports (CSV / PDF)
 
 ---
 
